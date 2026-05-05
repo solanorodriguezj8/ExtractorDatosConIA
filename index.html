@@ -20,18 +20,20 @@
         <div>
         <button onclick="descargar()" class="btnDescargar">Instalar el ultimo resultado</button>
         </div>
-        <div>
-            <div style="display: inline-block;">
-                <a href="guia/Guía-extractor-datos_pavysan.pdf" download>
-                    <button class="btnDescargar">Descargar guia</button>
-                </a>
-            </div>
-            <div style="display: inline-block;">
-                <a href="guia/Guía-extractor-datos_pavysan.pdf" download>
-                    <button class="btnDescargar">Descargar guia</button>
-                </a>
-            </div>
-        </div>
+
+	<div>
+		<div style="display:inline-block">
+			<a href="guias/Guía-extractor-datos_pavysan.pdf" download>
+				<button class="btnDescargar">Descargar guia</button>
+			</a>
+		</div>
+		<div style="display:inline-block">
+			<a href="guias/Guía-errores-extractor-datos_pavysan.pdf" download>
+				<button class="btnDescargar">Descargar guia sobre errores</button>
+			</a>
+		</div>
+	</div>
+
         </div>
 
         <script>
@@ -58,7 +60,7 @@
 
             try {
 
-                const res = await fetch("http://192.168.1.26:5000/procesar", { 
+                const res = await fetch("http://192.168.1.11:5000/procesar", { 
                     method: "POST",
                     body: formData
                 });
@@ -71,7 +73,7 @@
                 statusDiv.innerHTML = '<span class="loading">Procesando... (Iniciando)</span>';
 
                 pollingInterval = setInterval(() => {
-                    fetch(`http://192.168.1.26:5000/status/${job_id}`)
+                    fetch(`http://192.168.1.11:5000/status/${job_id}`)
                         .then(res => res.json())
                         .then(status => {
 
@@ -86,7 +88,7 @@
                                 btn.disabled = false;
                                 btn.innerText = "Procesar otro";
                                 
-                                window.location.href = `http://192.168.1.26:5000/download/${job_id}`;
+                                window.location.href = `http://192.168.1.11:5000/download/${job_id}`;
                             } 
                             else if (status.status === 'error') {
 
