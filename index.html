@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Extraccion datos facturas</title>
+        <link rel="stylesheet" href="./css/styles.css">
+    </head>
+    <body>
+
+        <div class="container">
+
+        <h1>Subir PDFs</h1>
+
+        <input type="file" id="pdfs" multiple accept="application/pdf">
+
+        <button onclick="enviar()" id="btnProcesar">Procesar</button>
+
+        <div id="status">Esperando archivos...</div>
+
+        <div>
+        <button onclick="descargar()" class="btnDescargar">Instalar el ultimo resultado</button>
+        </div>
+        <div>
+            <div style="display: inline-block;">
+                <a href="guia/Guía-extractor-datos_pavysan.pdf" download>
+                    <button class="btnDescargar">Descargar guia</button>
+                </a>
+            </div>
+            <div style="display: inline-block;">
+                <a href="guia/Guía-extractor-datos_pavysan.pdf" download>
+                    <button class="btnDescargar">Descargar guia</button>
+                </a>
+            </div>
+        </div>
+        </div>
+
+        <script>
+
+        let pollingInterval = null;
+
+        async function enviar() {
+            const files = document.getElementById("pdfs").files;
+            if (files.length === 0) {
+                alert("Por favor selecciona al menos un PDF");
+                return;
+            }
+
+            const statusDiv = document.getElementById("status");
+            const btn = document.getElementById("btnProcesar");
+            
+            btn.disabled = true;
+            statusDiv.innerHTML = '<span class="loading">Subiendo archivos...</span>';
+
+            const formData = new FormData();
+            for(let i = 0; i < files.length; i++){
+                formData.append("pdfs", files[i]);
+            }
+
+            try {
+
+                const res = await fetch("http://192.168.1.26:5000/procesar", { 
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await res.json();
+                const job_id = data.job_id;
+
+                if (!job_id) throw new Error("No se recibió ID de trabajo");
+
+                statusDiv.innerHTML = '<span class="loading">Procesando... (Iniciando)</span>';
+
+                pollingInterval = setInterval(() => {
+                    fetch(`http://192.168.1.26:5000/status/${job_id}`)
+                        .then(res => res.json())
+                        .then(status => {
+
+                            if (status.status === 'processing' || status.status === 'waiting') {
+                                statusDiv.innerHTML = `<span class="loading">Procesando: ${status.message} (${status.progress}%)</span>`;
+                            } 
+                            else if (status.status === 'done') {
+
+                                clearInterval(pollingInterval);
+
+                                statusDiv.innerHTML = `<span class="success">${status.message}</span>`;
+                                btn.disabled = false;
+                                btn.innerText = "Procesar otro";
+                                
+                                window.location.href = `http://192.168.1.26:5000/download/${job_id}`;
+                            } 
+                            else if (status.status === 'error') {
+
+                                clearInterval(pollingInterval);
+
+                                statusDiv.innerHTML = `<span class="error">Error: ${status.message}</span>`;
+                                btn.disabled = false;
+                                btn.innerText = "Reintentar";
+                            }
+
+                        })
+                        .catch(err => {
+
+                            console.error("Error al verificar estado:", err);
+
+                            statusDiv.innerHTML = '<span class="error">Error de conexión</span>';
+
+                            clearInterval(pollingInterval);
+                            btn.disabled = false;
+
+                        });
+
+                }, 1000);
+
+            } catch (error) {
+
+                console.error(error);
+
+                statusDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                btn.disabled = false;
+
+            }
+
+        }
+
+        function descargar(){
+            window.location.href = "salida/resultado.xlsx";
+        } 
+
+        </script>
+
+    </body>
+</html>

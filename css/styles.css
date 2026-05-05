@@ -1,0 +1,143 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(135deg,#f4f6fb,#e9eef7);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+h1{
+    margin-bottom: 25px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* INPUT FILE */
+
+input[type="file"]{
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #c9d3e0;
+    border-radius: 8px;
+    background: #fafbff;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+input[type="file"]:hover{
+    border-color: #007bff;
+    background: #f0f6ff;
+}
+
+/* BOTONES */
+
+button{
+    margin-top: 15px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+#btnProcesar{
+    background: #007bff;
+    color: white;
+}
+
+#btnProcesar:hover{
+    background: #0063d1;
+    transform: translateY(-1px);
+}
+
+#btnProcesar:disabled{
+    background: #9bbce3;
+    cursor: not-allowed;
+}
+
+button:last-child{
+    background: #28a745;
+    color: white;
+}
+
+button:last-child:hover{
+    background: #218838;
+}
+
+/* STATUS BOX */
+
+#status{
+    margin-top: 20px;
+    padding: 15px;
+    background: #f4f6fb;
+    border-radius: 8px;
+    min-height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+/* ESTADOS */
+
+.loading{
+    color: #007bff;
+    font-weight: 600;
+}
+
+.success{
+    color: #28a745;
+    font-weight: 600;
+}
+
+.error{
+    color: #dc3545;
+    font-weight: 600;
+}
+
+/* ANIMACIÓN DE CARGA */
+
+.loading::after{
+    content: " ⏳";
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+    0%{opacity:0.2;}
+    50%{opacity:1;}
+    100%{opacity:0.2;}
+}
+
+/* RESPONSIVE */
+
+@media (max-width:600px){
+
+    .container{
+        margin: 20px;
+        padding: 25px;
+    }
+
+    h1{
+        font-size: 22px;
+    }
+
+}
